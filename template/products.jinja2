@@ -4,31 +4,42 @@
   <title>Products - Amazon Review Analysis</title>
   <link rel="stylesheet" href="/static/style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <header>
+    <header class="animated-header">
       <h1>Analyzed Products</h1>
-      <p class="subtitle">Products that have been scraped and analyzed</p>
+      <p class="subtitle">Products analyzed with AI-powered insights and customer sentiment data</p>
     </header>
 
     <nav class="nav-bar">
-      <a href="/" class="nav-btn">Home</a>
-      <a href="/products" class="nav-btn active">Products</a>
-      <a href="/reviews" class="nav-btn">Reviews</a>
-      <a href="/dashboard" class="nav-btn">Dashboard</a>
+      <a href="/" class="nav-btn">
+        <span class="nav-icon">Home</span>
+      </a>
+      <a href="/products" class="nav-btn active">
+        <span class="nav-icon">Products</span>
+      </a>
+      <a href="/dashboard" class="nav-btn">
+        <span class="nav-icon">Dashboard</span>
+      </a>
+      <a href="/clear" class="nav-btn clear-btn">
+        <span class="nav-icon">Clear Data</span>
+      </a>
     </nav>
 
     <div class="main-content">
       {% if products %}
-        <div class="products-grid">
+        <div class="products-grid animated-products">
           {% for product in products %}
-            <div class="product-card">
+            <div class="product-card" data-product-id="{{ product.product_id }}">
               <div class="product-image">
                 {% if product.product_image %}
                   <img src="{{ product.product_image }}" alt="{{ product.product_name }}" loading="lazy">
                 {% else %}
-                  <div class="no-image">No Image</div>
+                  <div class="no-image">No Image Available</div>
                 {% endif %}
               </div>
               <div class="product-info">
@@ -38,24 +49,157 @@
                   <span class="review-count">{{ product.review_count }} Reviews Analyzed</span>
                 </div>
                 <div class="product-actions">
-                  <a href="{{ product.product_url }}" target="_blank" class="btn-secondary">View on Amazon</a>
+                  <a href="{{ product.product_url }}" target="_blank" class="btn-secondary">
+                    <span></span> View on Amazon
+                  </a>
+                  <button class="btn-secondary review-toggle" onclick="toggleReviews('{{ product.product_id }}')">
+                    <span></span> <span class="toggle-text">Show Reviews</span>
+                  </button>
+                </div>
+                
+                <!-- Reviews Dropdown -->
+                <div class="reviews-dropdown" id="reviews-{{ product.product_id }}" style="display: none;">
+                  <div class="reviews-header">
+                    <h4>Customer Reviews</h4>
+                  </div>
+                  <div class="reviews-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading reviews...</p>
+                  </div>
+                  <div class="reviews-content"></div>
                 </div>
               </div>
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <div class="empty-state">
+        <div class="empty-state animated-empty">
+          <div class="empty-icon">No Products</div>
           <h2>No Products Analyzed Yet</h2>
-          <p>Start by analyzing your first Amazon product!</p>
-          <a href="/" class="btn-primary">Analyze Product</a>
+          <p>Start by analyzing your first Amazon product to see detailed insights and customer sentiment data!</p>
+          <a href="/" class="btn-primary">
+            <span></span> Start Analysis
+          </a>
         </div>
       {% endif %}
     </div>
 
-    <footer>
-      <p>College Project: Web Scraping & Sentiment Analysis for Business Intelligence</p>
-    </footer>
+
   </div>
+
+  <script>
+    // Animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.querySelector('.animated-header');
+      const products = document.querySelectorAll('.product-card');
+      const emptyState = document.querySelector('.animated-empty');
+      
+      // Animate header
+      if (header) {
+        header.style.transform = 'translateY(-30px)';
+        header.style.opacity = '0';
+        setTimeout(() => {
+          header.style.transition = 'all 0.6s ease';
+          header.style.transform = 'translateY(0)';
+          header.style.opacity = '1';
+        }, 100);
+      }
+      
+      // Animate product cards
+      products.forEach((card, index) => {
+        card.style.transform = 'translateY(30px)';
+        card.style.opacity = '0';
+        setTimeout(() => {
+          card.style.transition = 'all 0.5s ease';
+          card.style.transform = 'translateY(0)';
+          card.style.opacity = '1';
+        }, 200 + (index * 100));
+      });
+      
+      // Animate empty state
+      if (emptyState) {
+        emptyState.style.transform = 'scale(0.8)';
+        emptyState.style.opacity = '0';
+        setTimeout(() => {
+          emptyState.style.transition = 'all 0.6s ease';
+          emptyState.style.transform = 'scale(1)';
+          emptyState.style.opacity = '1';
+        }, 300);
+      }
+    });
+
+    // Toggle reviews dropdown
+    async function toggleReviews(productId) {
+      const dropdown = document.getElementById(`reviews-${productId}`);
+      const toggleBtn = event.target.closest('.review-toggle');
+      const toggleText = toggleBtn.querySelector('.toggle-text');
+      
+      if (dropdown.style.display === 'none') {
+        dropdown.style.display = 'block';
+        toggleText.textContent = 'Hide Reviews';
+        
+        // Animate dropdown
+        dropdown.style.maxHeight = '0';
+        dropdown.style.overflow = 'hidden';
+        dropdown.style.transition = 'max-height 0.5s ease';
+        setTimeout(() => {
+          dropdown.style.maxHeight = '800px';
+        }, 50);
+        
+        // Load reviews if not already loaded
+        if (!dropdown.querySelector('.reviews-content').innerHTML) {
+          await loadReviews(productId);
+        }
+      } else {
+        dropdown.style.maxHeight = '0';
+        setTimeout(() => {
+          dropdown.style.display = 'none';
+          toggleText.textContent = 'Show Reviews';
+        }, 500);
+      }
+    }
+
+    // Load reviews for product
+    async function loadReviews(productId) {
+      const reviewsContent = document.querySelector(`#reviews-${productId} .reviews-content`);
+      const loadingDiv = document.querySelector(`#reviews-${productId} .reviews-loading`);
+      
+      try {
+        const response = await fetch(`/api/product-reviews/${productId}`);
+        const reviews = await response.json();
+        
+        loadingDiv.style.display = 'none';
+        
+        if (reviews.length === 0) {
+          reviewsContent.innerHTML = '<p class="no-reviews">No reviews found for this product.</p>';
+          return;
+        }
+        
+        reviewsContent.innerHTML = reviews.map(review => `
+          <div class="review-item">
+            <div class="review-header">
+              <h5>${review.review_title || 'Customer Review'}</h5>
+              <div class="review-rating">
+                ${'★'.repeat(Math.floor(review.rating || 0))}
+                <span class="rating-text">(${review.rating || 0}/5)</span>
+              </div>
+            </div>
+            <p class="review-text">${review.review_text || 'No review content available.'}</p>
+            <div class="review-meta">
+              <span class="sentiment sentiment-${(review.sentiment || 'neutral').toLowerCase()}">
+                ${review.sentiment === 'positive' ? 'Positive' : 
+                  review.sentiment === 'negative' ? 'Negative' : 'Neutral'}
+              </span>
+              <span class="confidence">Confidence: ${Math.round((review.polarity || 0) * 100)}%</span>
+            </div>
+          </div>
+        `).join('');
+        
+      } catch (error) {
+        loadingDiv.style.display = 'none';
+        reviewsContent.innerHTML = '<p class="error-message">Error loading reviews. Please try again.</p>';
+      }
+    }
+  </script>
 </body>
 </html>

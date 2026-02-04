@@ -4,68 +4,54 @@
   <title>Amazon Customer Review Analysis</title>
   <link rel="stylesheet" href="/static/style.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
     <header>
       <h1>Amazon Customer Review Analysis</h1>
-      <p class="subtitle">Advanced web scraping and sentiment analysis for business intelligence</p>
     </header>
 
     <nav class="nav-bar">
-      <a href="/" class="nav-btn active">Home</a>
-      <a href="/products" class="nav-btn">Products</a>
-      <a href="/reviews" class="nav-btn">Reviews</a>
-      <a href="/dashboard" class="nav-btn">Dashboard</a>
+      <a href="/" class="nav-btn active">
+        <span class="nav-icon">Home</span>
+      </a>
+      <a href="/products" class="nav-btn">
+        <span class="nav-icon">Products</span>
+      </a>
+      <a href="/dashboard" class="nav-btn">
+        <span class="nav-icon">Dashboard</span>
+      </a>
+      <a href="/clear" class="nav-btn clear-btn">
+        <span class="nav-icon">Clear Data</span>
+      </a>
     </nav>
 
     <div class="main-content">
       <div class="main-form">
         <div class="form-header">
-          <h2>Start Product Analysis</h2>
-          <p>Enter any Amazon product URL to analyze customer reviews and extract business insights</p>
+          <h2>Start Your Analysis</h2>
+          <p>Enter any Amazon product URL to extract customer insights and perform advanced sentiment analysis</p>
         </div>
         
         <form action="/scrape" method="post">
           <div class="form-group">
             <label>Amazon Product URL <span class="required">*</span></label>
-            <input name="url" required placeholder="Paste your Amazon product URL here..." value="https://www.amazon.in/VRPEFIT-Activity-Fitness-smartwatch-Waterproof/dp/B0C89CM11C/ref=sr_1_4" />
-            <small>Example: https://www.amazon.in/product-name/dp/PRODUCT_ID</small>
-            <small class="info">System automatically detects duplicate products</small>
+            <input name="url" required placeholder="Paste your Amazon product URL here..." value="" />
+            <small class="info">System automatically detects and prevents duplicate analysis</small>
           </div>
 
           <button type="submit" class="btn-primary">
-            Analyze Product & Reviews
+            Analyze Product & Extract Insights
           </button>
         </form>
       </div>
 
-      <div class="features">
-        <h3>Analysis Features</h3>
-        <div class="feature-grid">
-          <div class="feature-item">
-            <h4>Product Details</h4>
-            <p>Extract product name, price, and images</p>
-          </div>
-          <div class="feature-item">
-            <h4>Customer Reviews</h4>
-            <p>Scrape review titles, content, and ratings</p>
-          </div>
-          <div class="feature-item">
-            <h4>Sentiment Analysis</h4>
-            <p>Analyze positive and negative sentiment patterns</p>
-          </div>
-          <div class="feature-item">
-            <h4>Business Intelligence</h4>
-            <p>Generate statistical insights and trends</p>
-          </div>
-        </div>
-      </div>
+  
     </div>
 
-    <footer>
-      <p>College Project: Advanced Web Scraping & AI-powered Sentiment Analysis</p>
-    </footer>
   </div>
 </body>
 </html>

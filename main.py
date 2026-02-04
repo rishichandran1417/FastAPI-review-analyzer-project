@@ -103,13 +103,13 @@ def scrape(
         conn.close()
         
         print(f"Successfully saved product and {saved_count} reviews to database")
-        return RedirectResponse(url="/reviews", status_code=303)
+        return RedirectResponse(url="/products", status_code=303)
         
     except Exception as e:
         print(f"Error in scrape route: {str(e)}")
         import traceback
         traceback.print_exc()
-        return RedirectResponse(url="/reviews?error=scrape_failed", status_code=303)
+        return RedirectResponse(url="/products?error=scrape_failed", status_code=303)
 
 
 @app.get("/reviews", response_class=HTMLResponse)
@@ -148,6 +148,56 @@ def products_page(request: Request):
 
     return templates.TemplateResponse("products.jinja2", {"request": request, "products": products})
 
+@app.get("/api/product-reviews/{product_id}")
+def get_product_reviews(product_id: str):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT review_title, review_text, rating, sentiment, polarity, created_at
+        FROM reviews 
+        WHERE product_id = ? 
+        ORDER BY id DESC
+        LIMIT 10
+    """, (product_id,))
+    
+    reviews = [{
+        "review_title": row["review_title"],
+        "review_text": row["review_text"],
+        "rating": row["rating"],
+        "sentiment": row["sentiment"],
+        "polarity": row["polarity"],
+        "created_at": row["created_at"]
+    } for row in cursor.fetchall()]
+    
+    conn.close()
+    return reviews
+
+@app.get("/api/product-reviews/{product_id}")
+def get_product_reviews(product_id: str):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT review_title, review_text, rating, sentiment, polarity, created_at
+        FROM reviews 
+        WHERE product_id = ? 
+        ORDER BY id DESC
+        LIMIT 10
+    """, (product_id,))
+    
+    reviews = [{
+        "review_title": row["review_title"],
+        "review_text": row["review_text"],
+        "rating": row["rating"],
+        "sentiment": row["sentiment"],
+        "polarity": row["polarity"],
+        "created_at": row["created_at"]
+    } for row in cursor.fetchall()]
+    
+    conn.close()
+    return reviews
+
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
     conn = get_db()
@@ -167,6 +217,31 @@ def dashboard(request: Request):
 
     return templates.TemplateResponse("dashboard.jinja2", {"request": request, "stats": stats})
 
+
+@app.get("/api/product-reviews/{product_id}")
+def get_product_reviews(product_id: str):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT review_title, review_text, rating, sentiment, polarity, created_at
+        FROM reviews 
+        WHERE product_id = ? 
+        ORDER BY id DESC
+        LIMIT 10
+    """, (product_id,))
+    
+    reviews = [{
+        "review_title": row["review_title"],
+        "review_text": row["review_text"],
+        "rating": row["rating"],
+        "sentiment": row["sentiment"],
+        "polarity": row["polarity"],
+        "created_at": row["created_at"]
+    } for row in cursor.fetchall()]
+    
+    conn.close()
+    return reviews
 
 @app.get("/clear")
 def clear_db():
