@@ -12,7 +12,6 @@
   <div class="container">
     <header class="animated-header">
       <h1>Analyzed Products</h1>
-      <p class="subtitle">Products analyzed with AI-powered insights and customer sentiment data</p>
     </header>
 
     <nav class="nav-bar">
@@ -164,9 +163,18 @@
       const reviewsContent = document.querySelector(`#reviews-${productId} .reviews-content`);
       const loadingDiv = document.querySelector(`#reviews-${productId} .reviews-loading`);
       
+      console.log('Loading reviews for product ID:', productId);
+      
       try {
         const response = await fetch(`/api/product-reviews/${productId}`);
+        console.log('API Response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const reviews = await response.json();
+        console.log('Received reviews:', reviews);
         
         loadingDiv.style.display = 'none';
         
@@ -196,8 +204,9 @@
         `).join('');
         
       } catch (error) {
+        console.error('Error loading reviews:', error);
         loadingDiv.style.display = 'none';
-        reviewsContent.innerHTML = '<p class="error-message">Error loading reviews. Please try again.</p>';
+        reviewsContent.innerHTML = `<p class="error-message">Error loading reviews: ${error.message}. Please try again.</p>`;
       }
     }
   </script>

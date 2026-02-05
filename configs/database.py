@@ -14,11 +14,11 @@ def init_db():
     cursor = conn.cursor()
     
     # Drop existing tables to clean up (sqlite_sequence will be dropped automatically)
-    cursor.execute("DROP TABLE IF EXISTS reviews")
-    cursor.execute("DROP TABLE IF EXISTS products")
+    # cursor.execute("DROP TABLE IF EXISTS reviews")
+    # cursor.execute("DROP TABLE IF EXISTS products")
 
     cursor.execute("""
-        CREATE TABLE products (
+        CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             product_id TEXT DEFAULT (lower(hex(randomblob(8)))) UNIQUE,
             product_name TEXT,
@@ -30,7 +30,7 @@ def init_db():
     """)
     
     cursor.execute("""
-        CREATE TABLE reviews (
+        CREATE TABLE IF NOT EXISTS reviews (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             product_id TEXT,
             review_title TEXT,
@@ -45,4 +45,4 @@ def init_db():
 
     conn.commit()
     conn.close()
-    print("Database tables recreated successfully")
+    print("Database tables initialized successfully")

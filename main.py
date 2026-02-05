@@ -150,6 +150,7 @@ def products_page(request: Request):
 
 @app.get("/api/product-reviews/{product_id}")
 def get_product_reviews(product_id: str):
+    print(f"API called for product_id: {product_id}")
     conn = get_db()
     cursor = conn.cursor()
 
@@ -161,6 +162,9 @@ def get_product_reviews(product_id: str):
         LIMIT 10
     """, (product_id,))
     
+    rows = cursor.fetchall()
+    print(f"Found {len(rows)} reviews for product_id: {product_id}")
+    
     reviews = [{
         "review_title": row["review_title"],
         "review_text": row["review_text"],
@@ -168,35 +172,36 @@ def get_product_reviews(product_id: str):
         "sentiment": row["sentiment"],
         "polarity": row["polarity"],
         "created_at": row["created_at"]
-    } for row in cursor.fetchall()]
+    } for row in rows]
     
     conn.close()
+    print(f"Returning {len(reviews)} reviews")
     return reviews
 
-@app.get("/api/product-reviews/{product_id}")
-def get_product_reviews(product_id: str):
+@app.get("/debug/database")
+def debug_database():
     conn = get_db()
     cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT review_title, review_text, rating, sentiment, polarity, created_at
-        FROM reviews 
-        WHERE product_id = ? 
-        ORDER BY id DESC
-        LIMIT 10
-    """, (product_id,))
     
-    reviews = [{
-        "review_title": row["review_title"],
-        "review_text": row["review_text"],
-        "rating": row["rating"],
-        "sentiment": row["sentiment"],
-        "polarity": row["polarity"],
-        "created_at": row["created_at"]
-    } for row in cursor.fetchall()]
+    # Check products
+    cursor.execute("SELECT product_id, product_name FROM products LIMIT 5")
+    products = cursor.fetchall()
+    
+    # Check reviews
+    cursor.execute("SELECT product_id, review_title FROM reviews LIMIT 5")
+    reviews = cursor.fetchall()
+    
+    # Count reviews
+    cursor.execute("SELECT COUNT(*) as count FROM reviews")
+    review_count = cursor.fetchone()
     
     conn.close()
-    return reviews
+    
+    return {
+        "products": [dict(p) for p in products],
+        "reviews": [dict(r) for r in reviews],
+        "total_reviews": dict(review_count)["count"]
+    }
 
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard(request: Request):
