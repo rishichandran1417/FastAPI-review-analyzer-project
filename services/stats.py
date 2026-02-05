@@ -68,3 +68,60 @@ def calculate_correlations(reviews):
             "rating_length": err_val
         }
 
+def calculate_detailed_sentiment_distribution(reviews):
+    """Calculate detailed sentiment distribution with 5 levels"""
+    if not reviews:
+        return {
+            "very_positive": 0,
+            "positive": 0,
+            "neutral": 0,
+            "negative": 0,
+            "very_negative": 0
+        }
+    
+    very_positive = sum(1 for r in reviews if r.get("polarity", 0) > 0.5)
+    positive = sum(1 for r in reviews if 0.1 < r.get("polarity", 0) <= 0.5)
+    neutral = sum(1 for r in reviews if -0.1 <= r.get("polarity", 0) <= 0.1)
+    negative = sum(1 for r in reviews if -0.5 <= r.get("polarity", 0) < -0.1)
+    very_negative = sum(1 for r in reviews if r.get("polarity", 0) < -0.5)
+    
+    return {
+        "very_positive": very_positive,
+        "positive": positive,
+        "neutral": neutral,
+        "negative": negative,
+        "very_negative": very_negative
+    }
+
+def calculate_advanced_metrics(reviews):
+    """Calculate advanced disagreement metrics"""
+    if not reviews:
+        return {
+            "rating": {"mean": 0, "median": 0, "std": 0, "variance": 0, "skewness": 0, "kurtosis": 0},
+            "polarity": {"mean": 0, "median": 0, "std": 0, "variance": 0, "skewness": 0, "kurtosis": 0}
+        }
+    
+    import numpy as np
+    from scipy import stats as scipy_stats
+    
+    ratings = [r["rating"] for r in reviews if r.get("rating") is not None]
+    polarities = [r["polarity"] for r in reviews if r.get("polarity") is not None]
+    
+    def calc_metrics(data):
+        if not data or len(data) < 2:
+            return {"mean": 0, "median": 0, "std": 0, "variance": 0, "skewness": 0, "kurtosis": 0}
+        arr = np.array(data)
+        return {
+            "mean": round(float(np.mean(arr)), 6),
+            "median": round(float(np.median(arr)), 6),
+            "std": round(float(np.std(arr, ddof=1)), 6),
+            "variance": round(float(np.var(arr, ddof=1)), 6),
+            "skewness": round(float(scipy_stats.skew(arr)), 6),
+            "kurtosis": round(float(scipy_stats.kurtosis(arr)), 6)
+        }
+    
+    return {
+        "rating": calc_metrics(ratings),
+        "polarity": calc_metrics(polarities)
+    }
+

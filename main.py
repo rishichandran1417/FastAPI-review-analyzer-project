@@ -6,11 +6,12 @@ from fastapi.templating import Jinja2Templates
 from configs.database import init_db, get_db
 from services.scraper import scrape_reviews, extract_product_details
 from services.sentiment import analyze_sentiment
-from services.stats import calculate_stats, calculate_correlations
+from services.stats import calculate_stats, calculate_correlations, calculate_detailed_sentiment_distribution, calculate_advanced_metrics
 from services.plots import (
     generate_review_length_plot, 
     generate_sentiment_polarity_plot,
-    generate_length_by_rating_plot
+    generate_length_by_rating_plot,
+    generate_rating_spread_plot
 )
 
 app = FastAPI()
@@ -226,8 +227,16 @@ def dashboard(request: Request):
     reviews = [{"sentiment": r["sentiment"], "rating": r["rating"], "polarity": r["polarity"], "review_text": r["review_text"]} for r in rows]
     stats = calculate_stats(reviews)
     correlations = calculate_correlations(reviews)
+    detailed_sentiment = calculate_detailed_sentiment_distribution(reviews)
+    advanced_metrics = calculate_advanced_metrics(reviews)
 
-    return templates.TemplateResponse("dashboard.jinja2", {"request": request, "stats": stats, "correlations": correlations})
+    return templates.TemplateResponse("dashboard.jinja2", {
+        "request": request, 
+        "stats": stats, 
+        "correlations": correlations,
+        "detailed_sentiment": detailed_sentiment,
+        "advanced_metrics": advanced_metrics
+    })
 
 
 @app.get("/clear")
@@ -275,4 +284,15 @@ def plot_length_by_rating():
     conn.close()
 
     img = generate_length_by_rating_plot(reviews)
+    return Response(content=img.getvalue(), media_type="image/png")
+
+@app.get("/plots/rating_spread")
+def plot_rating_spread():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT rating FROM reviews")
+    reviews = [{"rating": row["rating"]} for row in cursor.fetchall()]
+    conn.close()
+
+    img = generate_rating_spread_plot(reviews)
     return Response(content=img.getvalue(), media_type="image/png")

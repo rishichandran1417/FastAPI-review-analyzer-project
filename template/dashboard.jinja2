@@ -97,11 +97,120 @@
           </div>
         </div>
 
-        <div class="chart-container" style="margin-bottom: 2rem;">
-          <h3 class="chart-title" style="text-align: center;">Review Length by Rating</h3>
-          <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">Do people write more when they are angry or happy?</p>
-          <img src="/plots/length_by_rating" alt="Review Length by Rating" style="width: 100%; height: auto; border-radius: 8px;">
+        <!-- Review Length by Rating & Rating Spread in Single Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+          <div class="chart-container">
+            <h3 class="chart-title" style="text-align: center;">Review Length by Rating</h3>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1rem;">Do people write more when they are angry or happy?</p>
+            <img src="/plots/length_by_rating" alt="Review Length by Rating" style="width: 100%; height: auto; border-radius: 8px;">
+          </div>
+          <div class="chart-container">
+            <h3 class="chart-title" style="text-align: center;">Rating Spread & Variance</h3>
+            <img src="/plots/rating_spread" alt="Rating Spread & Variance" style="width: 100%; height: auto; border-radius: 8px;">
+          </div>
         </div>
+
+        <!-- Sentiment Distribution and Advanced Metrics Tables -->
+        {% if detailed_sentiment %}
+        <h2 style="margin-top: 3rem; margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1.5rem;">Statistical Analysis</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+          <!-- Sentiment Distribution Table -->
+          <div class="chart-container" style="padding: 2rem;">
+            <h3 class="chart-title" style="text-align: center; margin-bottom: 1.5rem;">SENTIMENT DISTRIBUTION</h3>
+            <table style="width: 100%; border-collapse: collapse; color: var(--text-primary);">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-color);">
+                  <th style="text-align: left; padding: 0.75rem; font-weight: 500;">Sentiment Class</th>
+                  <th style="text-align: right; padding: 0.75rem; font-weight: 500;">Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.75rem;">Very Positive</td>
+                  <td style="text-align: right; padding: 0.75rem; font-weight: 600;">{{ detailed_sentiment.very_positive }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.75rem;">Positive</td>
+                  <td style="text-align: right; padding: 0.75rem; font-weight: 600;">{{ detailed_sentiment.positive }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.75rem;">Neutral</td>
+                  <td style="text-align: right; padding: 0.75rem; font-weight: 600;">{{ detailed_sentiment.neutral }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.75rem;">Negative</td>
+                  <td style="text-align: right; padding: 0.75rem; font-weight: 600;">{{ detailed_sentiment.negative }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 0.75rem;">Very Negative</td>
+                  <td style="text-align: right; padding: 0.75rem; font-weight: 600;">{{ detailed_sentiment.very_negative }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Advanced Disagreement Metrics Table -->
+          {% if advanced_metrics %}
+          <div class="chart-container" style="padding: 2rem;">
+            <h3 class="chart-title" style="text-align: center; margin-bottom: 1.5rem;">ADVANCED DISAGREEMENT METRICS</h3>
+            <table style="width: 100%; border-collapse: collapse; color: var(--text-primary); font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-color);">
+                  <th style="text-align: left; padding: 0.6rem; font-weight: 500;">Metric</th>
+                  <th style="text-align: right; padding: 0.6rem; font-weight: 500;">Star Rating</th>
+                  <th style="text-align: right; padding: 0.6rem; font-weight: 500;">Sentiment Polarity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.6rem;">Mean</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.rating.mean }}</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.polarity.mean }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.6rem;">Median</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.rating.median }}</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.polarity.median }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.6rem;">Std Deviation</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.rating.std }}</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.polarity.std }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.6rem;">Variance</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.rating.variance }}</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.polarity.variance }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 0.6rem;">Skewness</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.rating.skewness }}</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.polarity.skewness }}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 0.6rem;">Kurtosis</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.rating.kurtosis }}</td>
+                  <td style="text-align: right; padding: 0.6rem;">{{ advanced_metrics.polarity.kurtosis }}</td>
+                </tr>
+              </tbody>
+            </table>
+            {% if correlations %}
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+              <div style="font-size: 0.95rem; line-height: 1.6;">
+                <div style="margin-bottom: 0.5rem;">
+                  <strong style="color: var(--primary-color);">Pearson Correlation (Rating vs Sentiment):</strong> 
+                  <span style="font-weight: 600;">{{ correlations.rating_sentiment.r }}</span>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.85rem;">
+                  P-Value: {{ correlations.rating_sentiment.p }}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
 
         <script>
         // Chart.js configuration with dark theme

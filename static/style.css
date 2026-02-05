@@ -421,26 +421,30 @@ small.info {
 .sentiment-neutral { color: var(--text-secondary); }
 
 .stats-grid {
+  display: flex;
+  flex-wrap: nowrap;      /* Never wrap to next line */
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+
+.charts-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 2rem;
   text-align: center;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .stat-card::before {
@@ -449,7 +453,7 @@ small.info {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 1px;
   background: var(--gradient-primary);
 }
 
@@ -523,8 +527,30 @@ small.info {
     grid-template-columns: 1fr;
   }
   
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.stat-card {
+  flex: 1;                /* Equal width */
+  min-width: 0;           /* Prevent overflow weirdness */
+  padding: 1.5rem;
+  position: relative;     /* Needed for ::before */
+}
+
+  
+  .stat-card {
+    padding: 1rem 0.5rem;
+    min-height: 100px;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+  
+  .charts-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   
   .review-meta {
