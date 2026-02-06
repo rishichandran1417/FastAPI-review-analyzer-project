@@ -58,13 +58,11 @@
             <div class="stat-label" style="color: var(--primary-color);">Rating vs. Sentiment</div>
             <div class="stat-value">r = {{ correlations.rating_sentiment.r }}</div>
             <div style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.95rem;">{{ correlations.rating_sentiment.text }}</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">(p-value: {{ correlations.rating_sentiment.p }})</div>
           </div>
           <div class="stat-card">
             <div class="stat-label" style="color: var(--primary-color);">Rating vs. Length</div>
             <div class="stat-value">r = {{ correlations.rating_length.r }}</div>
             <div style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.95rem;">{{ correlations.rating_length.text }}</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">(p-value: {{ correlations.rating_length.p }})</div>
           </div>
         </div>
         {% endif %}
@@ -260,26 +258,8 @@
 
         // Rating Bar Chart
         const ratingCtx = document.getElementById('ratingChart').getContext('2d');
-        const ratingData = [0, 0, 0, 0, 0]; // Initialize for ratings 1-5
-        
-        // This would be populated with actual rating distribution data
-        // For now, using sample data based on average rating
-        const avgRating = {{ stats.avg_rating }};
-        const totalReviews = {{ stats.total }};
-        
-        // Simple distribution based on average
-        if (avgRating >= 4) {
-          ratingData[4] = Math.floor(totalReviews * 0.6);
-          ratingData[3] = Math.floor(totalReviews * 0.3);
-          ratingData[2] = Math.floor(totalReviews * 0.1);
-        } else if (avgRating >= 3) {
-          ratingData[3] = Math.floor(totalReviews * 0.5);
-          ratingData[2] = Math.floor(totalReviews * 0.3);
-          ratingData[1] = Math.floor(totalReviews * 0.2);
-        } else {
-          ratingData[1] = Math.floor(totalReviews * 0.6);
-          ratingData[0] = Math.floor(totalReviews * 0.4);
-        }
+        // Use real rating distribution from server
+        const ratingData = {{ stats.stars | tojson }};
 
         new Chart(ratingCtx, {
           type: 'bar',

@@ -1,17 +1,27 @@
 def calculate_stats(reviews):
     total = len(reviews)
-    pos = sum(1 for r in reviews if r["sentiment"] == "Positive")
-    neg = sum(1 for r in reviews if r["sentiment"] == "Negative")
-    neu = sum(1 for r in reviews if r["sentiment"] == "Neutral")
+    pos = sum(1 for r in reviews if r.get("sentiment", "").lower() == "positive")
+    neg = sum(1 for r in reviews if r.get("sentiment", "").lower() == "negative")
+    neu = sum(1 for r in reviews if r.get("sentiment", "").lower() == "neutral")
 
     avg_rating = round(sum(r["rating"] for r in reviews) / total, 2) if total else 0
+
+    stars = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    for r in reviews:
+        try:
+            rating = int(round(r.get("rating", 0)))
+            if 1 <= rating <= 5:
+                stars[rating] += 1
+        except:
+            pass
 
     return {
         "total": total,
         "positive": pos,
         "negative": neg,
         "neutral": neu,
-        "avg_rating": avg_rating
+        "avg_rating": avg_rating,
+        "stars": [stars[1], stars[2], stars[3], stars[4], stars[5]]
     }
 
 def calculate_correlations(reviews):
