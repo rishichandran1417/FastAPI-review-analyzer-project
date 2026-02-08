@@ -213,6 +213,18 @@ def get_product_reviews(product_id: str):
     print(f"Returning {len(reviews)} reviews")
     return reviews
 
+@app.get("/api/reviews")
+def get_all_reviews():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM reviews")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    reviews = [dict(row) for row in rows]
+    return reviews
+
+
 @app.get("/debug/database")
 def debug_database():
     conn = get_db()
